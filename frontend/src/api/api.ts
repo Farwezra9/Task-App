@@ -10,10 +10,13 @@ const API = axios.create({
 
 API.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem("token");
+    const token =
+      localStorage.getItem("token") ||
+      sessionStorage.getItem("token");
 
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`; 
+      config.headers = config.headers ?? {};
+      config.headers.Authorization = `Bearer ${token}`;
     }
 
     return config;
@@ -26,11 +29,17 @@ API.interceptors.response.use(
   (error: AxiosError) => {
     if (error.response) {
       const status = error.response.status;
-      const url = error.config?.url;
+      const url = error.config?.url ?? "";
 
-     if ((status === 401 || status === 403) && !url?.includes("/auth/login")) {
+      const isAuthRoute =
+        url.includes("/auth/login") ||
+        url.includes("/auth/forgot-password") ||
+        url.includes("/auth/reset-password");
+
+      if ((status === 401 || status === 403) && !isAuthRoute) {
         localStorage.clear();
-        window.location.href = "/login";
+        sessionStorage.clear();
+        window.location.replace("/login");
       }
     }
 

@@ -17,7 +17,32 @@ exports.findByEmail = async (email) => {
   const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
   return result.rows[0];
 };
+exports.setResetToken = async (email, token, expiry) => {
+  await db.query(
+    `UPDATE users 
+     SET reset_token = $1, reset_token_expiry = $2
+     WHERE email = $3`,
+    [token, expiry, email]
+  );
+};
 
+exports.findByResetToken = async (token) => {
+  const result = await db.query(
+    `SELECT * FROM users 
+     WHERE reset_token = $1 
+     AND reset_token_expiry > NOW()`,
+    [token]
+  );
+  return result.rows[0];
+};
+exports.updatePassword = async (id, password) => {
+  await db.query(
+    `UPDATE users 
+     SET password = $1, reset_token = NULL, reset_token_expiry = NULL
+     WHERE id = $2`,
+    [password, id]
+  );
+};
 exports.getAll = async () => {
   const result = await db.query(baseSelect);
   return result.rows;

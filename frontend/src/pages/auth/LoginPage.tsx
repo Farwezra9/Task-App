@@ -1,6 +1,6 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
-import { AlertCircle,Mail, Lock, Loader2, ArrowLeft } from "lucide-react";
+import { AlertCircle, Mail, Lock, Loader2 } from "lucide-react";
 import API from "../../api/api";
 import Button from "../../components/ui/button/button";
 
@@ -8,6 +8,7 @@ function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -15,20 +16,35 @@ function LoginPage() {
     e.preventDefault();
     setError("");
     setIsLoading(true);
+
     try {
-      const res = await API.post("/auth/login", { email, password });
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("name", res.data.name);
-      localStorage.setItem("email", res.data.email);
-      localStorage.setItem("user", "true");
+      const res = await API.post("/auth/login", {
+        email,
+        password,
+        rememberMe,
+      });
+
+      const storage = rememberMe ? localStorage : sessionStorage;
+
+      localStorage.clear();
+      sessionStorage.clear();
+
+      storage.setItem("token", res.data.token);
+      storage.setItem("name", res.data.name);
+      storage.setItem("email", res.data.email);
 
       navigate("/todos");
-      window.location.reload();
     } catch (err: any) {
       setError(err.response?.data?.message || "Email atau password salah.");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleForgotPassword = () => {
+    navigate("/forgot-password", {
+      state: { email },
+    });
   };
 
   return (
@@ -55,7 +71,11 @@ function LoginPage() {
             Email Address
           </label>
           <div className="relative group">
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[#2557bd] transition-colors" size={18} strokeWidth={1.5} />
+            <Mail
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[#2557bd] transition-colors"
+              size={18}
+              strokeWidth={1.5}
+            />
             <input
               type="email"
               placeholder="nama@example.com"
@@ -72,7 +92,11 @@ function LoginPage() {
             Password
           </label>
           <div className="relative group">
-            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[#2557bd] transition-colors" size={18} strokeWidth={1.5} />
+            <Lock
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[#2557bd] transition-colors"
+              size={18}
+              strokeWidth={1.5}
+            />
             <input
               type="password"
               placeholder="Masukkan Password"
@@ -84,30 +108,53 @@ function LoginPage() {
           </div>
         </div>
 
-        <div className="pt-4">
-          <Button 
-            type="submit" 
-          variant="royal"
-          size="md"
-          className="w-full py-4"
-            disabled={isLoading}
+        <div className="flex items-center justify-between text-sm">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="w-4 h-4"
+            />
+            Remember Me
+          </label>
+
+          <button
+            type="button"
+            onClick={handleForgotPassword}
+            className="text-[#2557bd] hover:underline"
           >
-            {isLoading ? <Loader2 className="animate-spin mx-auto" size={20} strokeWidth={1.5} /> : "Login"}
-          </Button>
+            Lupa Password?
+          </button>
         </div>
 
-        <button 
-          type="button"
-          className="w-full flex items-center justify-center gap-3 py-4 border border-slate-100 rounded-xl font-light text-sm text-slate-500 hover:bg-slate-50 transition-colors"
-        >
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-4 h-4" alt="google" />
-          <span>Sign in with Google</span>
-        </button>
+        <div className="pt-4">
+          <Button
+            type="submit"
+            variant="royal"
+            size="md"
+            className="w-full py-4"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <Loader2
+                className="animate-spin mx-auto"
+                size={20}
+                strokeWidth={1.5}
+              />
+            ) : (
+              "Login"
+            )}
+          </Button>
+        </div>
       </form>
 
       <div className="mt-12 text-center text-sm font-light text-slate-400">
         Don't have an account?{" "}
-        <Link to="/register" className="text-[#2557bd] font-normal hover:underline ml-1">
+        <Link
+          to="/register"
+          className="text-[#2557bd] font-normal hover:underline ml-1"
+        >
           Sign Up
         </Link>
       </div>

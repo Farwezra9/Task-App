@@ -17,6 +17,9 @@ app.use("/api/users", usersRoutes);
 const todosRoutes = require("./routes/todos");
 app.use("/api/todos", todosRoutes);
 
+const categoryRoutes = require('./routes/categories');
+app.use('/api/categories', categoryRoutes);
+
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server port ${PORT}`);
