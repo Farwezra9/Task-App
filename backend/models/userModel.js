@@ -35,6 +35,14 @@ exports.findByResetToken = async (token) => {
   );
   return result.rows[0];
 };
+exports.clearResetToken = async (userId) => {
+  await db.query(
+    `UPDATE users 
+     SET reset_token = NULL, reset_token_expiry = NULL
+     WHERE id = $1`,
+    [userId]
+  );
+};
 exports.updatePassword = async (id, password) => {
   await db.query(
     `UPDATE users 

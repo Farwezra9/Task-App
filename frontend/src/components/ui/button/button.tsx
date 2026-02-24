@@ -22,7 +22,7 @@ const Button = ({
     // 2. Tambahkan warna #3159b3 di sini
     royal: "bg-[#3159b3] text-white shadow-xl shadow-blue-100 hover:bg-[#284a96]",
     primary: "bg-indigo-600 text-white shadow-sm",
-    secondary: "bg-slate-100 text-slate-900 hover:bg-slate-200",
+    secondary: "bg-slate-100 text-slate-900",
     danger: "bg-red-500 text-white shadow-lg shadow-red-200 hover:bg-red-600",
     outline: "border border-slate-200 text-slate-600 hover:border-[#3159b3] hover:text-[#3159b3]"
   };

@@ -12,8 +12,6 @@ import Button from "../../components/ui/button/button";
 function LandingPage() {
   return (
     <div className="min-h-screen bg-white text-slate-900 overflow-x-hidden">
-      {/* Navbar sudah dihapus dari sini agar tidak double */}
-
       {/* --- HERO SECTION --- */}
       <header className="relative pt-16 pb-24 px-6 text-center">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10 opacity-50">
@@ -27,14 +25,14 @@ function LandingPage() {
             <span>Productivity Booster 2026</span>
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 leading-[1.1]">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 leading-[1.1]">
             Kelola Belanjaan & Tugas <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-500">
               Tanpa Ribet.
             </span>
           </h1>
 
-          <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed">
             Satu tempat untuk mengatur semua daftar tugas dan belanjaan kamu. 
             Lebih rapi, lebih cepat, dan tersinkronisasi di semua perangkat.
           </p>
@@ -45,14 +43,14 @@ function LandingPage() {
                 Gunakan Sekarang <ArrowRight size={20} />
               </Button>
             </Link>
-            <Link to="/register">
+            <Link to="/demo">
               <Button variant="outline" size="lg" className="w-full sm:w-auto">
                 Lihat Demo
               </Button>
             </Link>
           </div>
 
-          <div className="mt-12 flex items-center justify-center gap-2 text-slate-400 text-sm font-medium">
+          <div className="mt-8 sm:mt-12 flex flex-col sm:flex-row items-center justify-center gap-2 text-slate-400 text-sm font-medium">
             <Lock size={14} />
             <span>Akses penuh fitur To-Do memerlukan akun</span>
           </div>
@@ -61,7 +59,7 @@ function LandingPage() {
 
       {/* --- FEATURES SECTION --- */}
       <section className="py-20 bg-slate-50 border-y border-slate-100 px-6">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-10">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-10">
           <FeatureItem 
             icon={<CheckCircle2 className="text-emerald-500" size={32} />}
             title="Sangat Cepat"
@@ -79,20 +77,16 @@ function LandingPage() {
           />
         </div>
       </section>
-
-      <footer className="py-10 text-center text-slate-400 text-sm">
-        <p>&copy; 2026 MyToko. Dibuat dengan ❤️ untuk produktivitas maksimal.</p>
-      </footer>
     </div>
   );
 }
 
 function FeatureItem({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) {
   return (
-    <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+    <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
       <div className="mb-4 bg-slate-50 w-fit p-3 rounded-2xl">{icon}</div>
-      <h3 className="text-xl font-bold mb-2">{title}</h3>
-      <p className="text-slate-500 leading-relaxed">{desc}</p>
+      <h3 className="text-lg sm:text-xl font-bold mb-2">{title}</h3>
+      <p className="text-slate-500 text-sm sm:text-base leading-relaxed">{desc}</p>
     </div>
   );
 }

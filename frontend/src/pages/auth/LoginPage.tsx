@@ -1,4 +1,4 @@
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useOutletContext } from "react-router-dom";
 import { useState } from "react";
 import { AlertCircle, Mail, Lock, Loader2 } from "lucide-react";
 import API from "../../api/api";
@@ -6,6 +6,9 @@ import Button from "../../components/ui/button/button";
 
 function LoginPage() {
   const navigate = useNavigate();
+  // Mengambil fungsi showAlert dari context layout
+  const { showAlert }: any = useOutletContext();
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -33,9 +36,17 @@ function LoginPage() {
       storage.setItem("name", res.data.name);
       storage.setItem("email", res.data.email);
 
-      navigate("/todos");
+      // Memicu alert sukses di layout
+      showAlert("Login Berhasil!", `Selamat datang kembali, ${res.data.name}`, "success");
+
+      setTimeout(() => {
+        navigate("/todos");
+      }, 1500);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Email atau password salah.");
+      const errorMsg = err.response?.data?.message || "Email atau password salah.";
+      setError(errorMsg);
+      // Memicu alert error di layout
+      showAlert("Login Gagal", errorMsg, "error");
     } finally {
       setIsLoading(false);
     }
@@ -109,20 +120,36 @@ function LoginPage() {
         </div>
 
         <div className="flex items-center justify-between text-sm">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-              className="w-4 h-4"
-            />
-            Remember Me
+          <label className="flex items-center group cursor-pointer select-none">
+            <div className="relative flex items-center justify-center">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded-md bg-white checked:bg-[#2557bd] checked:border-[#2557bd] transition-all duration-200 cursor-pointer"
+              />
+              <svg
+                className="absolute w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200 pointer-events-none"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <span className="ml-2 text-slate-600 font-light group-hover:text-[#2557bd] transition-colors">
+              Remember Me
+            </span>
           </label>
 
           <button
             type="button"
             onClick={handleForgotPassword}
-            className="text-[#2557bd] hover:underline"
+            className="text-[#2557bd] font-medium hover:text-blue-800 transition-colors"
           >
             Lupa Password?
           </button>

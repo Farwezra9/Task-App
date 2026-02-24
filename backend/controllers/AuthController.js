@@ -66,12 +66,13 @@ exports.forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
     const user = await User.findByEmail(email);
+
     if (!user) {
       return res.status(404).json({ message: "Email tidak ditemukan" });
     }
 
     const resetToken = crypto.randomBytes(32).toString("hex");
-    const expiry = new Date(Date.now() + 1000 * 60 * 30);
+    const expiry = new Date(Date.now() + 1000 * 60 * 15);
 
     await User.setResetToken(email, resetToken, expiry);
 
@@ -109,6 +110,7 @@ exports.resetPassword = async (req, res) => {
     const { password } = req.body;
 
     const user = await User.findByResetToken(token);
+
     if (!user) {
       return res.status(400).json({ message: "Token tidak valid atau expired" });
     }
@@ -116,6 +118,7 @@ exports.resetPassword = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await User.updatePassword(user.id, hashedPassword);
+    await User.clearResetToken(user.id);
 
     res.json({ message: "Password berhasil direset" });
 

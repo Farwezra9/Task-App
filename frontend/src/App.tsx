@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import MainLayout from "./components/layout/MainLayout";
 import AuthLayout from "./components/layout/AuthLayout";
 import LandingPage from "./pages/public/LandingPage";
+import DemoPage from "./pages/public/TodosDemoPage";
 import LoginPage from "./pages/auth/LoginPage";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
@@ -20,6 +21,7 @@ function App() {
         </Route>
           <Route element={<MainLayout />}>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/demo" element={<DemoPage />} />
           <Route path="/todos" element={<TodosPage />} />
         </Route>
       </Routes>

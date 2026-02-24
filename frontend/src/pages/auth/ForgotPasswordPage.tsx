@@ -11,22 +11,52 @@ function ForgotPasswordPage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
 
+  // ambil email dari state atau localStorage
   useEffect(() => {
-    // ambil email dari navigate state
     const stateEmail = location.state?.email;
 
     if (stateEmail) {
       setEmail(stateEmail);
-      localStorage.setItem("forgot_email", stateEmail); // backup kalau direfresh
+      localStorage.setItem("forgot_email", stateEmail);
     } else {
-      // fallback kalau direfresh
       const savedEmail = localStorage.getItem("forgot_email");
-      if (savedEmail) {
-        setEmail(savedEmail);
+      if (savedEmail) setEmail(savedEmail);
+    }
+
+    // cek expiry timer saat refresh
+    const savedExpiry = localStorage.getItem("reset_expiry");
+    if (savedExpiry) {
+      const remaining = Math.floor(
+        (Number(savedExpiry) - Date.now()) / 1000
+      );
+
+      if (remaining > 0) {
+        setTimeLeft(remaining);
+      } else {
+        localStorage.removeItem("reset_expiry");
       }
     }
   }, [location.state]);
+
+  // countdown berjalan tiap detik
+  useEffect(() => {
+    if (!timeLeft) return;
+
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (!prev || prev <= 1) {
+          clearInterval(interval);
+          localStorage.removeItem("reset_expiry");
+          return null;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [timeLeft]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +66,13 @@ function ForgotPasswordPage() {
 
     try {
       const res = await API.post("/auth/forgot-password", { email });
+
       setMessage(res.data.message);
+
+      const expiryTime = Date.now() + 60 * 1000;
+        localStorage.setItem("reset_expiry", expiryTime.toString());
+        setTimeLeft(60);
+
       localStorage.removeItem("forgot_email");
     } catch (err: any) {
       setError(err.response?.data?.message || "Terjadi kesalahan.");
@@ -97,7 +133,7 @@ function ForgotPasswordPage() {
             variant="royal"
             size="md"
             className="w-full py-4"
-            disabled={isLoading}
+            disabled={isLoading || timeLeft !== null}
           >
             {isLoading ? (
               <Loader2 className="animate-spin mx-auto" size={20} strokeWidth={1.5} />
@@ -106,6 +142,13 @@ function ForgotPasswordPage() {
             )}
           </Button>
         </div>
+
+        {timeLeft !== null && (
+          <p className="text-sm text-slate-500 text-center">
+            Kirim ulang dalam {Math.floor(timeLeft / 60)}:
+            {(timeLeft % 60).toString().padStart(2, "0")}
+          </p>
+        )}
 
         <Link
           to="/login"
